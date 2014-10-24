@@ -1,0 +1,338 @@
+#+TITLE: My personal settings
+#+OPTIONS: toc:nil num:nil ^:nil
+# Time-stamp: <2014-10-24 10:14:01 trey>
+#+STARTUP: hideshow
+#+STARTUP: hidestars
+#+STARTUP: entitiespretty
+  
+This is my additions to the [[file:starter-kit.org][Emacs Starter Kit]].
+
+* [X]  First, org-capture stuff.
+Get it started, gotta learn how to do this code embedding.. Not sure why he didnt
+use all caps on his code blocks.. Lets see if this will work.. I'll mostly just
+copy him.
+
+** Actually, first is org-bullets
+
+#+BEGIN_SRC emacs-lisp
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+END_SRC
+
+** Define my capture key bind
+   :PROPERTIES:
+   :CUSTOM_ID: org-capture
+   :END:
+#+begin_src emacs-lisp
+(define-key global-map "\C-cc" 'org-capture)
+#+end_src
+
+** Set a couple templates
+   :PROPERTIES:
+   :CUSTOM_ID: initial-templates
+   :END:
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Org/Todo.org" "Tasks")
+             "* TODO %?\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "~/Org/Journal.org")
+             "* %?\nEntered on %U\n  %i\n  %a")))
+#+END_SRC
+   
+** Add mine.. I think it'll break.
+   :PROPERTIES:
+   :CUSTOM_ID: my-note
+   :END:
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'org-capture-templates
+             '("T" "Notes" entry (file+datetree "~/Org/Notes.org")
+             "- %? " :empty-lines 1))
+#+END_SRC
+
+** Org-contacts and a Template for it.
+  
+Opps.. I gotta go and get org-contacts.. Hope I can *FIND* it.. Since I deleted all my
+configs.. Gonna try =M-x package-list-packages= first...
+ 
+ :PROPERTIES:
+ :CUSTOM_ID: Contacts-Template-Load-Custom
+ :END:
+#+BEGIN_SRC emacs-lisp
+    (add-to-list 'load-path "/home/trey/.emacs.d/Custom/")
+     (require 'org-contacts)
+         (add-to-list 'org-capture-templates
+                    '("c" "Contacts" entry (file "~/Org/Contacts.org")
+                          "* %(org-contacts-template-name)
+      :PROPERTIES:
+      :NICKNAME: 
+      :PHONE: %(org-contacts-template-number)
+      :PHONE2:   
+      :EMAIL:    
+      :ICON:
+      :NOTE:
+      :ADDRESS:
+      :SITE:
+      :BIRTHDAY:
+      :END:"))
+#+END_SRC
+
+** Toodledo !! contains my password, so dont like, uh..  yeah.
+
+Also, i forgot that this needs http-post-simple.el. Had to install it again for some reason.
+ :PROPERTIES:
+   :CUSTOM_ID: Toodledo-PASSWORD
+   :END:
+#+BEGIN_SRC emacs-lisp
+(require 'org-toodledo)
+ (setq org-toodledo-userid "td54406eee26723")
+ (setq org-toodledo-password "3y34mp1mp")
+
+ ;; Useful key bindings for org-mode
+ (add-hook 'org-mode-hook
+        (lambda ()
+          (local-unset-key "\C-o")
+          (local-set-key "\C-od" 'org-toodledo-mark-task-deleted)
+          (local-set-key "\C-os" 'org-toodledo-sync)
+          )
+        )
+ (add-hook 'org-agenda-mode-hook
+        (lambda ()
+          (local-unset-key "\C-o")
+          (local-set-key "\C-od" 'org-toodledo-agenda-mark-task-deleted)
+          )
+        )
+#+END_SRC
+
+** Line numbers and new lines
+   :PROPERTIES:
+   :CUSTOM_ID: linum-mode
+   :END:
+#+BEGIN_SRC emacs-lisp
+(global-linum-mode t)
+(setq next-line-add-newlines t)
+
+;;Oh, lets purdie up this syntax, shall we?
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+
+;;Also, save my little lame timestamps everywhere
+(add-hook 'before-save-hook 'time-stamp)
+#+END_SRC
+
+** Agenda Files
+   :PROPERTIES:
+   :CUSTOM_ID: agenda
+   :END:
+#+BEGIN_SRC 
+(setq org-agenda-files (list "~/Org/FrequentFiles.org"
+			     "~/Org/Todo.org"
+			     "~/Org/index.org"
+			     "~/Org/Notes.org"
+			     "~/Org/Appointments.org"
+			     "~/Org/Toodledo.org
+                             "/Org/Contacts.org"))
+#+END_SRC
+
+** Calfw has nothing to do with cows, apparently
+Need to learn about these.. calfw has some Org functions, which is nice. Lets hope 
+we can make gCals and orgCals have babies.
+   :PROPERTIES:
+   :CUSTOM_ID: Calendar-framework-gCal
+   :END:
+#+BEGIN_SRC emacs-lisp
+(require 'calfw)
+(require 'calfw-gcal)
+#+END_SRC
+
+
+* Load this file into a buffer
+:PROPERTIES:
+:CUSTOM_ID: load-literal-cfg
+:END:
+#+BEGIN_SRC emacs-lisp
+(initial-buffer-choice "~/.emacs.d/trey.org" nil nil "Should show .emacs on each load")
+#+END_SRC
+
+* Economics you say? well, ok, I'll try it. Also, gCal (new?) !
+Configuring Octomacs will make interaction a little nicer.
+Specifically, setting `octomacs-workdir-alist' and 
+"  M-x customize-group RET octomacs RET"
+   :PROPERTIES:
+   :CUSTOM_ID: octo-gCal
+   :END:
+#+BEGIN_SRC emacs-lisp
+ (require 'octomacs)
+ (require 'org-gcal)
+  #+END_SRC
+
+
+* Theme(s)
+   :PROPERTIES:
+   :CUSTOM_ID: multi-themes-it-seems
+   :END:
+#+BEGIN_SRC emacs-lisp
+;;(load-theme 'smyx-theme)
+;;(sml/setup)
+#+END_SRC
+
+* Syntax highlighting in blocks
+#+begin_src emacs-lisp
+(setq org-src-fontify-natively t)
+#+end_src
+
+
+* Remember Mode + TempzZz
+Including this if for nothing else than to import them into org-capture
+   :PROPERTIES:
+   :CUSTOM_ID: remember-template
+   :END:      
+#+BEGIN_SRC emacs-lisp
+(setq org-default-notes-file (concat org-directory "/Notes.org"))
+ (setq org-remember-templates
+   `(("Todo"    ?d "* TODO %?\n  %i\n" ,(concat org-directory "/remember-notes.org") bottom)
+     ("Misc"    ?m "* %?\n  %i\n"      ,(concat org-directory "/Notes.org")   "Misc")
+     ("iNfo"    ?N "* %?\n  %i\n"      ,(concat org-directory "/Notes.org")   "Information")
+     ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/Notes.org")   "Ideas")
+     ("Journal" ?u "* %T %?\n\n  %i\n" ,(concat org-directory "/Journal.org") bottom)
+     ("Blog"    ?b "* %T %? :BLOG:\n\n  %i\n" ,(concat org-directory "/Journal.org") bottom)
+     ))
+#+END_SRC
+
+
+* Conkeror
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'eww-browse-url) ; use eww as default browser
+(setq browse-url-generic-program (executable-find "conkeror")
+	shr-external-browser 'browse-url-generic)
+#+END_SRC
+
+
+
+* Cool Snippits I found
+
+** Insert Block =STOLEN from=  http://stackoverflow.com/q/19145433
+   :PROPERTIES:
+   :CUSTOM_ID: insert-block
+   :END:   
+#+BEGIN_SRC emacs-lisp
+(defun list-major-modes ()
+  "Returns list of potential major mode names (without the final -mode).
+Note, that this is guess work."
+  (interactive)
+  (let (l)
+    (mapatoms #'(lambda (f) (and
+                 (commandp f)
+                 (string-match "-mode$" (symbol-name f))
+                 ;; auto-loaded
+                 (or (and (autoloadp (symbol-function f))
+                      (let ((doc (documentation f)))
+                    (when doc
+                      (and
+                       (let ((docSplit (help-split-fundoc doc f)))
+                         (and docSplit ;; car is argument list
+                          (null (cdr (read (car docSplit)))))) ;; major mode starters have no arguments
+                       (if (string-match "[mM]inor" doc) ;; If the doc contains "minor"...
+                           (string-match "[mM]ajor" doc) ;; it should also contain "major".
+                         t) ;; else we cannot decide therefrom
+                       ))))
+                 (null (help-function-arglist f)))
+                 (setq l (cons (substring (symbol-name f) 0 -5) l)))))
+    (when (called-interactively-p 'any)
+      (with-current-buffer (get-buffer-create "*Major Modes*")
+    (clear-buffer-delete)
+    (let ((standard-output (current-buffer)))
+      (display-completion-list l)
+      (display-buffer (current-buffer)))))
+    l))
+
+(defvar org-insert-block-hist nil
+  "History for command `org-insert-block'")
+(defvar org-insert-block-hist/src:major nil
+  "History for major mode in org src blocks.")
+(defvar org-insert-block-list (append org-protecting-blocks
+                   '("comment" ""))
+  "List of block types offered as completion for command `org-insert-block'")
+;; block_src switches: -n () -r (references) -l "((%s))" (label format) -k (keep labels)
+(defvar org-insert-block-list-specials
+  "Assoc list of Commands for reading additional specification of org-blocks.")
+(setq org-insert-block-list-specials
+      '(("src" . (concat " " (completing-read "Major mode:"
+                        (list-major-modes)
+                        nil nil
+                        (car org-insert-block-hist/src:major)
+                        '(org-insert-block-hist/src:major . 1)
+                        )))))
+
+(defun org-insert-block (bl &optional b e attributes)
+  "Put region between b and e into org-block of kind bl.
+If b or e is nil then put org-block limiters around point.
+The string attributes is inserted behind the string #+begin_... "
+  (interactive
+   (let ((usereg (use-region-p))
+     (blKind (completing-read "Input block kind (tab: completion, uparrow: history):"
+               org-insert-block-list nil nil (car org-insert-block-hist) '(org-insert-block-hist . 1))))
+     (list
+      blKind
+      (when usereg (region-beginning))
+      (when usereg (region-end))
+      (let ((spec (assoc blKind org-insert-block-list-specials)))
+    (when spec (eval (cdr spec)))
+    ))))
+  (let ((begBlock (concat "\n#+begin_" bl attributes "\n"))
+    (endBlock (concat "\n#+end_" bl "\n")))
+    (if (and b e)
+    (save-restriction
+      (narrow-to-region b e)
+      (goto-char (point-min))
+      (insert begBlock)
+      (goto-char (point-max))
+      (insert endBlock)
+      (indent-region (point-min) (point-max)))
+      (let ((p (point)))
+    (insert endBlock)
+    (goto-char p)
+    (insert begBlock))
+      )))
+(add-hook 'org-mode-hook '(lambda ()
+                (local-set-key (kbd "C-c b") 'org-insert-block)))
+   #+END_SRC
+
+* Packages I've installed.
+
+1) org-bullets 
+2) [ ] org-contacts.el
+3) org-toodledo
+4) smart-mode-line
+5) typing-practice
+6) http-post-simple
+7) [ ] calfw-gcal
+8) calfw
+9) bbdb 
+10) bbdb-
+11) color-theme-library 
+12) auto-complete
+13) [ ] octomacs
+14)  org-gcal
+15) 
+
+
+
+
+* Lil template
+:PROPERTIES:
+:CUSTOM_ID: comm-temp
+:END:
+#+begin_src emacs-lisp
+(add-to-list 'org-structure-template-alist '("C" "#+begin_comment\n?\n#+end_comment"))
+#+end_src
+
+
+
+ 
+** 
+** 
+*** 
+**** 
+***** 
+****** 
+**** 
